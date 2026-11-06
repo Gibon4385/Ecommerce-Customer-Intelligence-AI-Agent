@@ -1,0 +1,27 @@
+roles:
+  Support:
+    tools: [get_customer_profile, get_cross_sell_recommendations, get_data_freshness, get_task_status, list_tasks, search_knowledge]
+    tables: [mart_c360_table, mart_product_affinity, mart_ops_pipeline_status, agent_task_log]
+    max_limits: {list_tasks: 20, search_knowledge: 5}
+    deny_fields: [actual_profit, predicted_profit_90_days, prob_minmax, prob_sigmoid, hashed_email]
+  PM:
+    tools: [get_product_health, get_brand_health_alerts, get_sleepy_product_review, get_cohort_analysis, get_model_feature_importance, get_daily_kpi, get_conversion_funnel, get_category_sales, list_priority_actions, get_data_freshness, get_task_status, list_tasks, search_knowledge, create_product_issue, generate_report, approve_task, execute_task]
+    tables: [mart_product_health_report, mart_brand_health_monitor, mart_sleepy_product_health, mart_cohort_retention, mart_cohort_revenue, mart_model_explanations, mart_ops_daily_kpi, mart_ops_category_sales, mart_ops_pipeline_status, agent_task_log]
+    max_limits: {get_sleepy_product_review: 100, get_daily_kpi: 366, get_category_sales: 520, list_tasks: 20, search_knowledge: 5}
+    deny_fields: [user_id, hashed_email]
+  Marketing:
+    tools: [get_customer_profile, list_priority_actions, list_churn_risk_customers, list_cart_abandoners, get_product_health, get_brand_health_alerts, get_sleepy_product_review, get_cross_sell_recommendations, get_cohort_analysis, get_model_feature_importance, get_daily_kpi, get_conversion_funnel, get_category_sales, get_campaign_performance, check_audience_quality, get_data_freshness, get_task_status, list_tasks, search_knowledge, draft_retention_edm, send_edm, generate_report, approve_task, execute_task]
+    tables: [mart_c360_table, mart_top_priority_actions, mart_churn_risk_list, mart_cart_abandonment_list, mart_product_health_report, mart_brand_health_monitor, mart_sleepy_product_health, mart_product_affinity, mart_cohort_retention, mart_cohort_revenue, mart_model_explanations, mart_ops_daily_kpi, mart_ops_conversion_funnel, mart_ops_category_sales, mart_ops_campaign_performance, mart_ops_customer_touch_log, mart_ops_pipeline_status, agent_task_log]
+    max_limits: {list_priority_actions: 100, list_churn_risk_customers: 100, list_cart_abandoners: 100, get_daily_kpi: 366, get_conversion_funnel: 1000, list_tasks: 20, search_knowledge: 5}
+    deny_fields: [hashed_email]
+  Ops:
+    tools: [get_brand_health_alerts, list_priority_actions, get_cohort_analysis, get_model_feature_importance, get_daily_kpi, get_conversion_funnel, get_category_sales, get_campaign_performance, get_data_freshness, get_task_status, list_tasks, search_knowledge, create_product_issue, generate_report, execute_task]
+    tables: [mart_cohort_retention, mart_cohort_revenue, mart_model_explanations, mart_ops_daily_kpi, mart_ops_conversion_funnel, mart_ops_category_sales, mart_ops_campaign_performance, mart_ops_pipeline_status, agent_task_log]
+    max_limits: {get_daily_kpi: 366, get_conversion_funnel: 1000, get_category_sales: 520, list_tasks: 100, search_knowledge: 5}
+    deny_fields: [user_id, hashed_email]
+  Admin:
+    tools: ['*']
+    tables: ['*']
+    max_limits: {}
+    deny_fields: [hashed_email]
+

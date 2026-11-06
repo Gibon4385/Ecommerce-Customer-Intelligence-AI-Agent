@@ -1,0 +1,9 @@
+users:
+  support_01: {role: Support, data_scope: single_customer}
+  pm_01: {role: PM, data_scope: aggregate}
+  pm_approver: {role: PM, data_scope: aggregate}
+  marketing_01: {role: Marketing, data_scope: marketing}
+  marketing_approver: {role: Marketing, data_scope: marketing}
+  ops_01: {role: Ops, data_scope: aggregate}
+  admin_01: {role: Admin, data_scope: all}
+

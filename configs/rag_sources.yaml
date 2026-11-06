@@ -1,0 +1,21 @@
+documents:
+  - id: ops-mart-definitions
+    path: knowledge_base/data_dictionary/ops_marts.md
+    version: "1.0"
+    title: Operational Mart Definitions
+    allowed_roles: [PM, Marketing, Ops, Admin]
+  - id: task-log-definitions
+    path: knowledge_base/data_dictionary/agent_task_log.md
+    version: "1.0"
+    title: Agent Task Log Definitions
+    allowed_roles: [PM, Marketing, Ops, Admin]
+  - id: customer-contact-policy
+    path: knowledge_base/policies/customer_contact_policy.md
+    version: "1.0"
+    title: Customer Contact Policy
+    allowed_roles: [Support, Marketing, Admin]
+  - id: admin-operations-policy
+    path: knowledge_base/policies/admin_operations_policy.md
+    version: "1.0"
+    title: Admin Operations Policy
+    allowed_roles: [Admin]
