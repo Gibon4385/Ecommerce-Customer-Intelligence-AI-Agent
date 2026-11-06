@@ -1,0 +1,56 @@
+{
+  "generated_at": "2026-11-05T07:13:22.681386+00:00",
+  "golden_version": "golden_v0",
+  "prompt_version": "system_v1",
+  "cli_version": "codex-cli 0.166.0",
+  "model": "Codex CLI default (exact model unavailable)",
+  "token_usage": "CLI mode unavailable",
+  "cost": "CLI mode unavailable",
+  "records": [
+    {
+      "id": "G001",
+      "calls": [
+        {
+          "name": "get_customer_profile",
+          "arguments": {
+            "user_id": "U000001"
+          }
+        }
+      ],
+      "answer": "結論：U000001 屬於「休眠高價值客戶」，距上次購買 803 天，歷史購買 1 次、消費金額 1,392.89。主要驅動因素是距上次購買時間，主要障礙是評論綜合情緒（0.4404）。\n\n客戶輪廓：城市 New Roberttown；性別 Other；註冊日期 2025-03-13；商品瀏覽 4 次；加購 1 次；風險標記為 0；目前自動化建議為「維持現行策略」。\n\n價值資訊：實際利潤 0.0；預測未來 90 天利潤為 11.0631，此為估計值，不是保證。\n\n資料截至：2026-07-06；資料版本：2026-07-07T02:00:00+00:00。",
+      "error": null,
+      "trace_id": "9e4d3e50-589d-4f18-9205-6af31136b7e1"
+    }
+  ],
+  "scoring": {
+    "case_count": 1,
+    "pass_rate": 0.0,
+    "tool_selection_accuracy": 1.0,
+    "parameter_accuracy": 1.0,
+    "required_facts_accuracy": 1.0,
+    "forbidden_content_compliance": 0.0,
+    "critical_pass_rate": 1.0,
+    "results": [
+      {
+        "id": "G001",
+        "critical": false,
+        "passed": false,
+        "tool_selection_pass": true,
+        "parameter_pass": true,
+        "facts_pass": true,
+        "forbidden_pass": false,
+        "missing_facts": [],
+        "forbidden_found": [
+          "保證"
+        ],
+        "expected_tools": [
+          "get_customer_profile"
+        ],
+        "actual_tools": [
+          "get_customer_profile"
+        ],
+        "error": null
+      }
+    ]
+  }
+}
