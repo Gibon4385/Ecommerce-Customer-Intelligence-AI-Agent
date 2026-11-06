@@ -34,7 +34,9 @@ adapter，架構已保留未來分接 small／large model 的能力。
 
 若沒有可用快取，AI 會透過 **MCP tools** 查詢每日營收、訂單、AOV、轉換漏斗、品類表現與資料
 新鮮度。這些工具只讀取允許的 Marts，具有固定參數與筆數上限；LLM 不會接觸 Raw data，也不能
-自行產生任意可執行 SQL。
+自行產生任意可執行 SQL。資料口徑也由工具固定：營收只計 completed orders；來源沒有 `checkout` event，
+漏斗終點使用 purchase event；成本資料尚未提供，因此 `gross_profit` 的 `NULL`
+代表不可得，不能解讀為零。
 
 如果需要確認公司對異常指標或後續處理的規範，AI 會使用 **RAG** 搜尋政策、資料字典與操作文件，
 並在回答中附上來源版本與行號。目前知識層使用 DuckDB 的 deterministic lexical index，未來可隨
