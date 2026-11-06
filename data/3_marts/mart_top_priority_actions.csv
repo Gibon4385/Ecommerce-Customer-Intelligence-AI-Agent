@@ -1,0 +1,101 @@
+user_id,segment,recommended_action,priority_score,estimated_revenue,reason
+U005446,At-Risk Repeat Customer,Monitor,86.9332,0.93,No high-priority business trigger matched
+U001309,At-Risk Repeat Customer,Monitor,82.539,0.91,No high-priority business trigger matched
+U005997,Dormant High-Value Customer,Monitor,82.5318,0.91,No high-priority business trigger matched
+U004632,At-Risk Repeat Customer,Monitor,80.2565,0.9,No high-priority business trigger matched
+U008179,Dormant High-Value Customer,Monitor,79.9236,0.89,No high-priority business trigger matched
+U001285,At-Risk Repeat Customer,Monitor,79.8968,0.89,No high-priority business trigger matched
+U002404,Dormant High-Value Customer,Monitor,77.9142,0.88,No high-priority business trigger matched
+U009107,At-Risk Repeat Customer,Monitor,77.5474,0.88,No high-priority business trigger matched
+U008088,Dormant High-Value Customer,Monitor,76.9339,0.88,No high-priority business trigger matched
+U000441,Dormant High-Value Customer,Monitor,75.5891,0.87,No high-priority business trigger matched
+U007259,Dormant High-Value Customer,Monitor,74.2406,0.86,No high-priority business trigger matched
+U009987,At-Risk Repeat Customer,Monitor,73.1401,0.86,No high-priority business trigger matched
+U002288,Dormant High-Value Customer,Monitor,71.5598,0.85,No high-priority business trigger matched
+U009806,Dormant High-Value Customer,Monitor,71.5598,0.85,No high-priority business trigger matched
+U005269,Dormant High-Value Customer,Monitor,70.9992,0.84,No high-priority business trigger matched
+U008850,At-Risk Repeat Customer,Monitor,69.4106,0.83,No high-priority business trigger matched
+U003237,At-Risk Repeat Customer,Monitor,67.5273,0.82,No high-priority business trigger matched
+U000322,At-Risk Repeat Customer,Monitor,67.217,0.82,No high-priority business trigger matched
+U001211,At-Risk Repeat Customer,Monitor,66.9795,0.82,No high-priority business trigger matched
+U008883,At-Risk Repeat Customer,Monitor,65.7072,0.81,No high-priority business trigger matched
+U002189,Dormant High-Value Customer,Monitor,65.6505,0.81,No high-priority business trigger matched
+U009589,At-Risk Repeat Customer,Monitor,64.3028,0.8,No high-priority business trigger matched
+U009856,Dormant High-Value Customer,Monitor,63.3664,0.8,No high-priority business trigger matched
+U006936,At-Risk Repeat Customer,Monitor,63.0912,0.79,No high-priority business trigger matched
+U000286,At-Risk Repeat Customer,Monitor,61.1415,0.78,No high-priority business trigger matched
+U000788,At-Risk Repeat Customer,Monitor,59.9726,0.77,No high-priority business trigger matched
+U001264,At-Risk Repeat Customer,Monitor,58.8013,0.77,No high-priority business trigger matched
+U008059,At-Risk Repeat Customer,Monitor,55.0905,0.74,No high-priority business trigger matched
+U001806,Dormant High-Value Customer,Monitor,43.0284,0.66,No high-priority business trigger matched
+U003072,Dormant High-Value Customer,Monitor,42.3905,0.65,No high-priority business trigger matched
+U007551,Dormant High-Value Customer,Monitor,40.3327,0.64,No high-priority business trigger matched
+U002722,Dormant High-Value Customer,Monitor,38.975,0.62,No high-priority business trigger matched
+U007667,At-Risk Repeat Customer,Monitor,34.8135,0.59,No high-priority business trigger matched
+U002466,Dormant High-Value Customer,Monitor,28.6739,0.54,No high-priority business trigger matched
+U009902,Dormant High-Value Customer,Monitor,24.3473,0.49,No high-priority business trigger matched
+U001379,At-Risk Repeat Customer,Monitor,23.2546,0.48,No high-priority business trigger matched
+U001885,General Potential Customer,Lookalike Expansion,0.0,15.9,VVIP seed user suitable for audience expansion
+U007484,Dormant High-Value Customer,Retargeting Campaign,0.0,14.44,Cart abandoned with high predicted 90-day profit
+U003175,General Potential Customer,Lookalike Expansion,0.0,11.73,VVIP seed user suitable for audience expansion
+U005389,Dormant High-Value Customer,Lookalike Expansion,0.0,10.68,VVIP seed user suitable for audience expansion
+U001755,General Potential Customer,Lookalike Expansion,0.0,9.0,VVIP seed user suitable for audience expansion
+U008965,Dormant High-Value Customer,Lookalike Expansion,0.0,9.0,VVIP seed user suitable for audience expansion
+U002588,Dormant High-Value Customer,Retargeting Campaign,0.0,8.82,Cart abandoned with high predicted 90-day profit
+U003684,Recent New Customer,Retargeting Campaign,0.0,8.74,Cart abandoned with high predicted 90-day profit
+U005616,General Potential Customer,Retargeting Campaign,0.0,8.32,Cart abandoned with high predicted 90-day profit
+U000299,General Potential Customer,Retargeting Campaign,0.0,8.23,Cart abandoned with high predicted 90-day profit
+U002102,VVIP Loyal High-Value Customer,Lookalike Expansion,0.0,8.0,VVIP seed user suitable for audience expansion
+U003721,Recent New Customer,Retargeting Campaign,0.0,7.78,Cart abandoned with high predicted 90-day profit
+U005845,Dormant High-Value Customer,Retargeting Campaign,0.0,7.2,Cart abandoned with high predicted 90-day profit
+U009303,General Potential Customer,Lookalike Expansion,0.0,6.38,VVIP seed user suitable for audience expansion
+U000862,Dormant High-Value Customer,Lookalike Expansion,0.0,6.24,VVIP seed user suitable for audience expansion
+U003654,General Potential Customer,Lookalike Expansion,0.0,6.24,VVIP seed user suitable for audience expansion
+U005891,General Potential Customer,Retargeting Campaign,0.0,6.15,Cart abandoned with high predicted 90-day profit
+U004026,General Potential Customer,Retargeting Campaign,0.0,6.13,Cart abandoned with high predicted 90-day profit
+U001002,General Potential Customer,Lookalike Expansion,0.0,6.06,VVIP seed user suitable for audience expansion
+U008807,General Potential Customer,Retargeting Campaign,0.0,5.99,Cart abandoned with high predicted 90-day profit
+U006065,General Potential Customer,Lookalike Expansion,0.0,5.95,VVIP seed user suitable for audience expansion
+U008603,Dormant High-Value Customer,Retargeting Campaign,0.0,5.85,Cart abandoned with high predicted 90-day profit
+U008528,General Potential Customer,Lookalike Expansion,0.0,5.75,VVIP seed user suitable for audience expansion
+U005470,General Potential Customer,Lookalike Expansion,0.0,5.73,VVIP seed user suitable for audience expansion
+U006599,General Potential Customer,Retargeting Campaign,0.0,5.63,Cart abandoned with high predicted 90-day profit
+U008376,Dormant High-Value Customer,Retargeting Campaign,0.0,5.63,Cart abandoned with high predicted 90-day profit
+U004377,General Potential Customer,Lookalike Expansion,0.0,5.58,VVIP seed user suitable for audience expansion
+U002495,At-Risk Repeat Customer,Retargeting Campaign,0.0,5.54,Cart abandoned with high predicted 90-day profit
+U002209,General Potential Customer,Lookalike Expansion,0.0,5.53,VVIP seed user suitable for audience expansion
+U006006,General Potential Customer,Retargeting Campaign,0.0,5.52,Cart abandoned with high predicted 90-day profit
+U001235,General Potential Customer,Retargeting Campaign,0.0,5.49,Cart abandoned with high predicted 90-day profit
+U002709,General Potential Customer,Lookalike Expansion,0.0,5.47,VVIP seed user suitable for audience expansion
+U004360,Dormant High-Value Customer,Retargeting Campaign,0.0,5.46,Cart abandoned with high predicted 90-day profit
+U004216,General Potential Customer,Lookalike Expansion,0.0,5.45,VVIP seed user suitable for audience expansion
+U003886,Dormant High-Value Customer,Lookalike Expansion,0.0,5.43,VVIP seed user suitable for audience expansion
+U001674,Dormant High-Value Customer,Lookalike Expansion,0.0,5.39,VVIP seed user suitable for audience expansion
+U003499,Dormant High-Value Customer,Lookalike Expansion,0.0,5.39,VVIP seed user suitable for audience expansion
+U008319,Dormant High-Value Customer,Lookalike Expansion,0.0,5.39,VVIP seed user suitable for audience expansion
+U007748,General Potential Customer,Lookalike Expansion,0.0,5.36,VVIP seed user suitable for audience expansion
+U008361,General Potential Customer,Retargeting Campaign,0.0,5.32,Cart abandoned with high predicted 90-day profit
+U006346,General Potential Customer,Retargeting Campaign,0.0,5.23,Cart abandoned with high predicted 90-day profit
+U006140,Dormant High-Value Customer,Lookalike Expansion,0.0,5.22,VVIP seed user suitable for audience expansion
+U003409,Dormant High-Value Customer,Retargeting Campaign,0.0,5.16,Cart abandoned with high predicted 90-day profit
+U004533,Recent New Customer,Retargeting Campaign,0.0,5.09,Cart abandoned with high predicted 90-day profit
+U006942,Recent New Customer,Lookalike Expansion,0.0,5.05,VVIP seed user suitable for audience expansion
+U009542,General Potential Customer,Lookalike Expansion,0.0,5.05,VVIP seed user suitable for audience expansion
+U006234,General Potential Customer,Lookalike Expansion,0.0,5.0,VVIP seed user suitable for audience expansion
+U001930,General Potential Customer,Lookalike Expansion,0.0,4.79,VVIP seed user suitable for audience expansion
+U008109,General Potential Customer,Lookalike Expansion,0.0,4.79,VVIP seed user suitable for audience expansion
+U008289,General Potential Customer,Retargeting Campaign,0.0,4.73,Cart abandoned with high predicted 90-day profit
+U002782,General Potential Customer,Lookalike Expansion,0.0,4.72,VVIP seed user suitable for audience expansion
+U004234,General Potential Customer,Retargeting Campaign,0.0,4.64,Cart abandoned with high predicted 90-day profit
+U004660,VVIP Loyal High-Value Customer,Retargeting Campaign,0.0,4.51,Cart abandoned with high predicted 90-day profit
+U003466,General Potential Customer,Lookalike Expansion,0.0,4.5,VVIP seed user suitable for audience expansion
+U008502,General Potential Customer,Lookalike Expansion,0.0,4.48,VVIP seed user suitable for audience expansion
+U008253,Dormant High-Value Customer,Retargeting Campaign,0.0,4.47,Cart abandoned with high predicted 90-day profit
+U009014,Dormant High-Value Customer,Lookalike Expansion,0.0,4.47,VVIP seed user suitable for audience expansion
+U000586,Dormant High-Value Customer,Lookalike Expansion,0.0,4.4,VVIP seed user suitable for audience expansion
+U005855,General Potential Customer,Lookalike Expansion,0.0,4.4,VVIP seed user suitable for audience expansion
+U006243,General Potential Customer,Lookalike Expansion,0.0,4.4,VVIP seed user suitable for audience expansion
+U007247,General Potential Customer,Lookalike Expansion,0.0,4.4,VVIP seed user suitable for audience expansion
+U008767,General Potential Customer,Lookalike Expansion,0.0,4.4,VVIP seed user suitable for audience expansion
+U000649,General Potential Customer,Retargeting Campaign,0.0,4.37,Cart abandoned with high predicted 90-day profit
+U006229,General Potential Customer,Lookalike Expansion,0.0,4.36,VVIP seed user suitable for audience expansion

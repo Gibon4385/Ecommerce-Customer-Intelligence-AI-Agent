@@ -1,0 +1,11 @@
+category,avg_sentiment_score_7d,risk_review_ratio_7d,review_count_7d,avg_sentiment_score_30d,risk_review_ratio_30d,review_count_30d,avg_sentiment_score_60d,risk_review_ratio_60d,review_count_60d,alert_level
+Beauty,0.4201,0.0,1,0.4201,0.0,1,0.5662333333333333,0.0,3,Healthy
+Automotive,,,0,0.47680000000000006,0.0,3,0.4679166666666667,0.16666666666666666,6,Healthy
+Books,,,0,0.636,0.0,1,0.74725,0.0,2,Healthy
+Clothing,,,0,-0.1174,1.0,1,0.5615,0.2,5,Healthy
+Electronics,,,0,,,0,0.165375,0.25,4,Healthy
+Groceries,,,0,,,0,-0.4767,1.0,1,Healthy
+Home & Kitchen,,,0,0.4404,0.0,1,0.5382,0.0,2,Healthy
+Pet Supplies,,,0,0.17620000000000002,0.5,4,0.27502222222222217,0.2222222222222222,9,Healthy
+Sports,,,0,,,0,0.3581,0.0,4,Healthy
+Toys,,,0,,,0,0.488,0.0,2,Healthy

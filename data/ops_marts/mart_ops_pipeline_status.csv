@@ -1,0 +1,16 @@
+model_name,layer,run_date,run_finished_at,status,row_count,data_as_of
+mart_brand_health_monitor,marts,2026-07-07,2026-07-07T02:00:00+00:00,success,10,2026-07-06
+mart_business_recommendations,marts,2026-07-07,2026-07-07T02:00:00+00:00,success,6117,2026-07-06
+mart_c360_table,marts,2026-07-07,2026-07-07T02:00:00+00:00,success,6117,2026-07-06
+mart_cart_abandonment_list,marts,2026-07-07,2026-07-07T02:00:00+00:00,success,4510,2026-07-06
+mart_churn_risk_list,marts,2026-07-07,2026-07-07T02:00:00+00:00,success,36,2026-07-06
+mart_cohort_retention,marts,2026-07-07,2026-07-07T02:00:00+00:00,success,31,2026-07-06
+mart_cohort_revenue,marts,2026-07-07,2026-07-07T02:00:00+00:00,success,31,2026-07-06
+mart_edm_suggestions,marts,2026-07-07,2026-07-07T02:00:00+00:00,success,10,2026-07-06
+mart_lookalike_seed,marts,2026-07-07,2026-07-07T02:00:00+00:00,success,1322,2026-07-06
+mart_model_explanations,marts,2026-07-07,2026-07-07T02:00:00+00:00,success,5,2026-07-06
+mart_product_affinity,marts,2026-07-07,2026-07-07T02:00:00+00:00,success,4,2026-07-06
+mart_product_health_report,marts,2026-07-07,2026-07-07T02:00:00+00:00,success,2000,2026-07-06
+mart_sleepy_product_health,marts,2026-07-07,2026-07-07T02:00:00+00:00,success,1813,2026-07-06
+mart_top_priority_actions,marts,2026-07-07,2026-07-07T02:00:00+00:00,success,100,2026-07-06
+mart_lookalike_hashed_email,marts,2026-07-07,2026-07-07T02:00:00+00:00,success,1322,2026-07-06

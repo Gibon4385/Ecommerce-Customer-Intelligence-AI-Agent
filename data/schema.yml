@@ -1,0 +1,390 @@
+version: 1
+
+# CSV/Repository data contract for the standalone AI Agent project.
+# This is intentionally not a dbt schema.yml.
+defaults:
+  format: csv
+  encoding: utf-8
+  delimiter: ","
+  header: true
+  null_values: [""]
+  strict_columns: true
+  on_type_error: fail
+
+types:
+  string: UTF-8 text
+  integer: signed 64-bit integer
+  decimal: fixed-point decimal; do not use binary float for money
+  float: double-precision number
+  date: ISO-8601 YYYY-MM-DD
+  timestamp: ISO-8601 timestamp
+  boolean: true/false
+  string_list: delimited string normalized to a list by the Repository
+
+classifications:
+  public: non-sensitive reference data
+  internal: company-internal aggregate or operational data
+  confidential: customer-level or commercially sensitive data
+  restricted: stable identifier or activation data requiring explicit authorization
+
+tables:
+  # Raw exports
+  raw_users:
+    path: 9_raw/users.csv
+    layer: raw
+    primary_key: [user_id]
+    classification: restricted
+    agent_access: denied
+    columns: {user_id: string, name: string, email: string, gender: string, city: string, signup_date: date}
+    sensitive_columns: {user_id: identifier, name: direct_pii, email: direct_pii}
+  raw_products:
+    path: 9_raw/products.csv
+    layer: raw
+    primary_key: [product_id]
+    classification: internal
+    agent_access: denied
+    columns: {product_id: string, product_name: string, category: string, brand: string, price: decimal, rating: float}
+  raw_orders:
+    path: 9_raw/orders.csv
+    layer: raw
+    primary_key: [order_id]
+    classification: confidential
+    agent_access: denied
+    columns: {order_id: string, user_id: string, order_date: timestamp, order_status: string, total_amount: decimal}
+    sensitive_columns: {user_id: identifier}
+  raw_order_items:
+    path: 9_raw/order_items.csv
+    layer: raw
+    primary_key: [order_item_id]
+    classification: confidential
+    agent_access: denied
+    columns: {order_item_id: string, order_id: string, product_id: string, user_id: string, quantity: integer, item_price: decimal, item_total: decimal}
+    sensitive_columns: {user_id: identifier}
+  raw_events:
+    path: 9_raw/events.csv
+    layer: raw
+    primary_key: [event_id]
+    classification: confidential
+    agent_access: denied
+    columns: {event_id: string, user_id: string, product_id: string, event_type: string, event_timestamp: timestamp}
+    sensitive_columns: {user_id: identifier}
+  raw_reviews:
+    path: 9_raw/reviews.csv
+    layer: raw
+    primary_key: [review_id]
+    classification: confidential
+    agent_access: denied
+    columns: {review_id: string, order_id: string, product_id: string, user_id: string, rating: integer, review_text: string, review_date: timestamp}
+    sensitive_columns: {user_id: identifier, review_text: untrusted_user_content}
+
+  # Staging exports
+  stg_users:
+    path: 1_staging/stg_users.csv
+    layer: staging
+    primary_key: [user_id]
+    classification: restricted
+    agent_access: denied
+    columns: {user_id: string, name: string, gender: string, city: string, signup_date: date}
+    sensitive_columns: {user_id: identifier, name: direct_pii}
+  stg_users_hashed:
+    path: 1_staging/stg_users_hashed.csv
+    layer: staging
+    primary_key: [user_id]
+    classification: restricted
+    agent_access: denied
+    columns: {user_id: string, hashed_email: string}
+    sensitive_columns: {user_id: identifier, hashed_email: pseudonymous_identifier}
+  stg_products:
+    path: 1_staging/stg_products.csv
+    layer: staging
+    primary_key: [product_id]
+    classification: internal
+    agent_access: denied
+    columns: {product_id: string, product_name: string, category: string, brand: string, price: decimal, rating: float}
+  stg_orders:
+    path: 1_staging/stg_orders.csv
+    layer: staging
+    primary_key: [order_id]
+    classification: confidential
+    agent_access: denied
+    columns: {order_id: string, user_id: string, total_amount: decimal, order_status: string, order_date: timestamp}
+    sensitive_columns: {user_id: identifier}
+  stg_order_items:
+    path: 1_staging/stg_order_items.csv
+    layer: staging
+    primary_key: [order_item_id]
+    classification: confidential
+    agent_access: denied
+    columns: {order_item_id: string, order_id: string, product_id: string, user_id: string, quantity: integer, item_price: decimal, item_total: decimal}
+    sensitive_columns: {user_id: identifier}
+  stg_events:
+    path: 1_staging/stg_events.csv
+    layer: staging
+    primary_key: [event_id]
+    classification: confidential
+    agent_access: denied
+    columns: {event_id: string, user_id: string, event_type: string, product_id: string, event_timestamp: timestamp}
+    sensitive_columns: {user_id: identifier}
+  stg_reviews:
+    path: 1_staging/stg_reviews.csv
+    layer: staging
+    primary_key: [review_id]
+    classification: confidential
+    agent_access: denied
+    columns: {review_id: string, order_id: string, user_id: string, product_id: string, rating: integer, review_text: string, review_date: date}
+    sensitive_columns: {user_id: identifier, review_text: untrusted_user_content}
+
+  # Intermediate exports
+  int_cart_abandonment_base:
+    path: 2_intermediate/int_cart_abandonment_base.csv
+    layer: intermediate
+    primary_key: [user_id]
+    classification: confidential
+    agent_access: denied
+    columns: {user_id: string, abandoned_product_ids: string_list}
+    parsing: {abandoned_product_ids: {delimiter: ",", trim: true}}
+  int_cohort_base:
+    path: 2_intermediate/int_cohort_base.csv
+    layer: intermediate
+    primary_key: [order_id]
+    classification: confidential
+    agent_access: denied
+    columns: {user_id: string, order_id: string, cohort_month: date, total_amount: decimal, order_month: date, period_number: integer}
+  int_customer_segments:
+    path: 2_intermediate/int_customer_segments.csv
+    layer: intermediate
+    primary_key: [user_id]
+    classification: confidential
+    agent_access: denied
+    columns: {user_id: string, recency: integer, frequency: integer, monetary: decimal, recency_score: integer, frequency_score: integer, monetary_score: integer, city: string, gender: string, signup_date: date, compound_score: float, risk_flag: integer, segment: string}
+  int_event_aggregates:
+    path: 2_intermediate/int_event_aggregates.csv
+    layer: intermediate
+    primary_key: [user_id]
+    classification: confidential
+    agent_access: denied
+    columns: {user_id: string, total_views: integer, total_cart_adds: integer}
+  int_ltv_predictions:
+    path: 2_intermediate/int_ltv_predictions.csv
+    layer: intermediate
+    primary_key: [user_id]
+    classification: confidential
+    agent_access: denied
+    columns: {user_id: string, predicted_profit_90_days: decimal, primary_driver: string, primary_barrier: string}
+  int_ltv_training_features:
+    path: 2_intermediate/int_ltv_training_features.csv
+    layer: intermediate
+    primary_key: [user_id]
+    classification: confidential
+    agent_access: denied
+    columns: {user_id: string, recency: integer, frequency: integer, total_views: integer, total_cart_adds: integer, compound_score: float, actual_profit: decimal}
+  int_product_pain_points:
+    path: 2_intermediate/int_product_pain_points.csv
+    layer: intermediate
+    primary_key: [product_id]
+    classification: internal
+    agent_access: denied
+    columns: {product_id: string, top_pain_points: string}
+    sensitive_columns: {top_pain_points: untrusted_derived_content}
+  int_product_review_health:
+    path: 2_intermediate/int_product_review_health.csv
+    layer: intermediate
+    primary_key: [product_id]
+    classification: internal
+    agent_access: denied
+    null_values_by_column: {top_pain_points: ["", "N/A"]}
+    nullable: [avg_rating_overall, rating_30d, rating_45d, rating_60d, top_pain_points]
+    columns: {product_id: string, product_name: string, category: string, brand: string, price: decimal, avg_rating_overall: float, rating_30d: float, rating_45d: float, rating_60d: float, total_risk_reviews: integer, top_pain_points: string}
+  int_review_sentiment_detail:
+    path: 2_intermediate/int_review_sentiment_detail.csv
+    layer: intermediate
+    primary_key: [review_id]
+    classification: confidential
+    agent_access: denied
+    columns: {review_id: string, user_id: string, product_id: string, compound_score: float, risk_flag: integer}
+  int_review_sentiment_user:
+    path: 2_intermediate/int_review_sentiment_user.csv
+    layer: intermediate
+    primary_key: [user_id]
+    classification: confidential
+    agent_access: denied
+    columns: {user_id: string, compound_score: float, risk_flag: integer}
+  int_rfm_scores:
+    path: 2_intermediate/int_rfm_scores.csv
+    layer: intermediate
+    primary_key: [user_id]
+    classification: confidential
+    agent_access: denied
+    columns: {user_id: string, recency: integer, frequency: integer, monetary: decimal, recency_score: integer, frequency_score: integer, monetary_score: integer}
+
+  # Agent-facing marts. Access is still constrained by configs/rbac.yaml.
+  mart_c360_table:
+    path: 3_marts/mart_c360_table.csv
+    layer: marts
+    primary_key: [user_id]
+    classification: confidential
+    agent_access: role_restricted
+    nullable: [total_views, total_cart_adds, actual_profit]
+    columns: {user_id: string, recency: integer, frequency: integer, monetary: decimal, recency_score: integer, frequency_score: integer, monetary_score: integer, segment: string, compound_score: float, risk_flag: integer, city: string, gender: string, signup_date: date, total_views: integer, total_cart_adds: integer, actual_profit: decimal, predicted_profit_90_days: decimal, prob_minmax: float, prob_sigmoid: float, primary_driver: string, primary_barrier: string, automation_trigger: string}
+  mart_business_recommendations:
+    path: 3_marts/mart_business_recommendations.csv
+    layer: marts
+    primary_key: [user_id]
+    classification: confidential
+    agent_access: role_restricted
+    columns: {user_id: string, segment: string, recommended_action: string, priority_score: decimal, estimated_revenue: decimal, reason: string}
+  mart_top_priority_actions:
+    path: 3_marts/mart_top_priority_actions.csv
+    layer: marts
+    primary_key: [user_id]
+    classification: confidential
+    agent_access: role_restricted
+    columns: {user_id: string, segment: string, recommended_action: string, priority_score: decimal, estimated_revenue: decimal, reason: string}
+  mart_lookalike_seed:
+    path: 3_marts/mart_lookalike_seed.csv
+    layer: marts
+    primary_key: [user_id]
+    classification: confidential
+    agent_access: role_restricted
+    columns: {user_id: string, segment: string, recency: integer, frequency: integer, monetary: decimal, predicted_profit_90_days: decimal}
+  mart_lookalike_hashed_email:
+    path: 3_marts/marketing/mart_lookalike_hashed_email.csv
+    layer: marts
+    primary_key: [user_id]
+    alternate_unique_key: [hashed_email]
+    classification: restricted
+    agent_access: explicit_export_only
+    canonical: true
+    duplicate_paths_to_reject: [3_marts/mart_lookalike_hashed_email.csv]
+    columns: {user_id: string, segment: string, recency: integer, frequency: integer, monetary: decimal, predicted_profit_90_days: decimal, hashed_email: string}
+    sensitive_columns: {user_id: identifier, hashed_email: pseudonymous_identifier}
+  mart_churn_risk_list:
+    path: 3_marts/mart_churn_risk_list.csv
+    layer: marts
+    primary_key: [user_id]
+    classification: confidential
+    agent_access: role_restricted
+    columns: {user_id: string, segment: string, recency: integer, recency_score: integer, frequency_score: integer, predicted_profit_90_days: decimal, risk_flag: integer}
+  mart_cart_abandonment_list:
+    path: 3_marts/mart_cart_abandonment_list.csv
+    layer: marts
+    primary_key: [user_id]
+    classification: confidential
+    agent_access: role_restricted
+    columns: {user_id: string, abandoned_product_ids: string_list, total_cart_adds: integer, total_views: integer, segment: string, predicted_profit_90_days: decimal, risk_flag: integer}
+    parsing: {abandoned_product_ids: {delimiter: ",", trim: true}}
+  mart_edm_suggestions:
+    path: 3_marts/mart_edm_suggestions.csv
+    layer: marts
+    primary_key: [category]
+    classification: internal
+    agent_access: role_restricted
+    columns: {category: string, total_quantity: decimal}
+  mart_product_health_report:
+    path: 3_marts/mart_product_health_report.csv
+    layer: marts
+    primary_key: [product_id]
+    classification: internal
+    agent_access: role_restricted
+    nullable: [avg_rating_overall, rating_30d, rating_45d, rating_60d, top_pain_points]
+    null_values_by_column: {top_pain_points: ["", "N/A"]}
+    columns: {product_id: string, product_name: string, category: string, brand: string, price: decimal, avg_rating_overall: float, rating_30d: float, rating_45d: float, rating_60d: float, total_risk_reviews: integer, top_pain_points: string}
+    sensitive_columns: {top_pain_points: untrusted_derived_content}
+  mart_sleepy_product_health:
+    path: 3_marts/mart_sleepy_product_health.csv
+    layer: marts
+    primary_key: [product_id]
+    classification: internal
+    agent_access: role_restricted
+    nullable: [avg_rating_overall, rating_30d, top_pain_points]
+    null_values_by_column: {top_pain_points: ["", "N/A"]}
+    columns: {product_id: string, product_name: string, category: string, brand: string, price: decimal, avg_rating_overall: float, rating_30d: float, total_risk_reviews: integer, top_pain_points: string, action_required: string}
+    sensitive_columns: {top_pain_points: untrusted_derived_content}
+  mart_brand_health_monitor:
+    path: 3_marts/mart_brand_health_monitor.csv
+    layer: marts
+    primary_key: [category]
+    classification: internal
+    agent_access: role_restricted
+    nullable: [avg_sentiment_score_7d, risk_review_ratio_7d, avg_sentiment_score_30d, risk_review_ratio_30d]
+    columns: {category: string, avg_sentiment_score_7d: float, risk_review_ratio_7d: float, review_count_7d: integer, avg_sentiment_score_30d: float, risk_review_ratio_30d: float, review_count_30d: integer, avg_sentiment_score_60d: float, risk_review_ratio_60d: float, review_count_60d: integer, alert_level: string}
+  mart_product_affinity:
+    path: 3_marts/mart_product_affinity.csv
+    layer: marts
+    primary_key: [affinity_level, product_a_id, product_b_id]
+    classification: internal
+    agent_access: role_restricted
+    columns: {affinity_level: string, product_a_id: string, product_a_name: string, product_a_category: string, product_b_id: string, product_b_name: string, product_b_category: string, co_occurrence_count: integer, support: float, confidence_a_to_b: float}
+  mart_cohort_retention:
+    path: 3_marts/mart_cohort_retention.csv
+    layer: marts
+    primary_key: [cohort_month]
+    classification: internal
+    agent_access: role_restricted
+    columns: {cohort_month: date, cohort_size: integer, period_0: float, period_1: float, period_2: float, period_3: float, period_4: float, period_5: float, period_6: float, period_7: float, period_8: float, period_9: float, period_10: float, period_11: float, period_12: float}
+    nullable: [period_1, period_2, period_3, period_4, period_5, period_6, period_7, period_8, period_9, period_10, period_11, period_12]
+    constraints: {period_0_to_12: {min: 0.0, max: 1.0}}
+  mart_cohort_revenue:
+    path: 3_marts/mart_cohort_revenue.csv
+    layer: marts
+    primary_key: [cohort_month]
+    classification: internal
+    agent_access: role_restricted
+    columns: {cohort_month: date, period_0: decimal, period_1: decimal, period_2: decimal, period_3: decimal, period_4: decimal, period_5: decimal, period_6: decimal, period_7: decimal, period_8: decimal, period_9: decimal, period_10: decimal, period_11: decimal, period_12: decimal}
+    nullable: [period_1, period_2, period_3, period_4, period_5, period_6, period_7, period_8, period_9, period_10, period_11, period_12]
+  mart_model_explanations:
+    path: 3_marts/mart_model_explanations.csv
+    layer: marts
+    primary_key: [feature]
+    classification: internal
+    agent_access: role_restricted
+    columns: {feature: string, importance_gain: float}
+    constraints: {importance_gain: {min: 0.0, max: 1.0}}
+
+  # Operational marts built in this repository.
+  mart_ops_daily_kpi:
+    path: ops_marts/mart_ops_daily_kpi.csv
+    layer: ops_marts
+    primary_key: [date]
+    classification: internal
+    agent_access: role_restricted
+    nullable: [gross_profit, revenue_wow_pct, orders_wow_pct, anomaly_reason]
+    columns: {date: date, revenue: decimal, gross_profit: decimal, orders: integer, units: integer, aov: decimal, active_customers: integer, new_customers: integer, returning_customers: integer, new_customer_ratio: float, revenue_wow_pct: float, orders_wow_pct: float, is_anomaly: boolean, anomaly_reason: string}
+  mart_ops_conversion_funnel:
+    path: ops_marts/mart_ops_conversion_funnel.csv
+    layer: ops_marts
+    primary_key: [date, category]
+    classification: internal
+    agent_access: role_restricted
+    nullable: [view_to_cart_rate, cart_to_purchase_rate, overall_conversion_rate, cart_abandon_rate]
+    columns: {date: date, category: string, view_users: integer, cart_users: integer, purchase_users: integer, view_to_cart_rate: float, cart_to_purchase_rate: float, overall_conversion_rate: float, cart_abandon_rate: float}
+  mart_ops_category_sales:
+    path: ops_marts/mart_ops_category_sales.csv
+    layer: ops_marts
+    primary_key: [week_start, category]
+    classification: internal
+    agent_access: role_restricted
+    nullable: [gross_profit, revenue_wow_pct]
+    columns: {week_start: date, category: string, revenue: decimal, units: integer, orders: integer, gross_profit: decimal, revenue_wow_pct: float, share_of_total_revenue: float, avg_selling_price: decimal}
+  mart_ops_campaign_performance:
+    path: ops_marts/mart_ops_campaign_performance.csv
+    layer: ops_marts
+    primary_key: [campaign_id, target_segment]
+    classification: confidential
+    agent_access: role_restricted
+    columns: {campaign_id: string, campaign_name: string, campaign_type: string, start_date: date, end_date: date, target_segment: string, offer_type: string, discount_pct: float, audience_size: integer, sent: integer, opened: integer, clicked: integer, converted: integer, revenue: decimal, cost: decimal, open_rate: float, click_rate: float, conversion_rate: float, roas: float}
+  mart_ops_customer_touch_log:
+    path: ops_marts/mart_ops_customer_touch_log.csv
+    layer: ops_marts
+    primary_key: [touch_id]
+    classification: confidential
+    agent_access: role_restricted
+    columns: {touch_id: string, user_id: string, channel: string, campaign_id: string, touch_date: date, offer_type: string, discount_pct: float, outcome: string}
+    sensitive_columns: {user_id: identifier}
+  mart_ops_pipeline_status:
+    path: ops_marts/mart_ops_pipeline_status.csv
+    layer: ops_marts
+    primary_key: [model_name, run_date]
+    classification: internal
+    agent_access: role_restricted
+    columns: {model_name: string, layer: string, run_date: date, run_finished_at: timestamp, status: string, row_count: integer, data_as_of: date}

@@ -1,0 +1,5 @@
+affinity_level,product_a_id,product_a_name,product_a_category,product_b_id,product_b_name,product_b_category,co_occurrence_count,support,confidence_a_to_b
+product,P001214,Nimbus Nice,Toys,P001230,Orion Season,Toys,3,0.0001,0.1579
+product,P001030,Acme Figure,Home & Kitchen,P001344,Orion Second,Pet Supplies,3,0.0001,0.12
+product,P000934,Orion Network,Pet Supplies,P001775,Zenith Religious,Groceries,3,0.0001,0.1154
+product,P001249,GreenLeaf Even,Books,P001334,Solace Personal,Beauty,3,0.0001,0.1154

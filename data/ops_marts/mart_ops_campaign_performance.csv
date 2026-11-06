@@ -1,0 +1,6 @@
+campaign_id,campaign_name,campaign_type,start_date,end_date,target_segment,offer_type,discount_pct,audience_size,sent,opened,clicked,converted,revenue,cost,open_rate,click_rate,conversion_rate,roas
+CMP0001,Synthetic At-Risk Repeat Customer Campaign,EDM,2026-06-01,2026-06-07,At-Risk Repeat Customer,percentage_discount,10.0,431,385,231,35,26,5396.93,290.58,0.6,0.090909,0.067532,18.572958
+CMP0002,Synthetic Dormant High-Value Customer Campaign,SMS,2026-06-04,2026-06-10,Dormant High-Value Customer,percentage_discount,10.0,1188,1085,304,150,116,23789.63,1051.12,0.280184,0.138249,0.106912,22.632649
+CMP0003,Synthetic General Potential Customer Campaign,Retargeting,2026-06-07,2026-06-13,General Potential Customer,percentage_discount,10.0,474,405,159,49,21,5650.17,497.36,0.392593,0.120988,0.051852,11.360323
+CMP0004,Synthetic Recent New Customer Campaign,Lookalike,2026-06-10,2026-06-16,Recent New Customer,percentage_discount,10.0,369,343,212,44,30,2973.41,459.53,0.618076,0.12828,0.087464,6.470546
+CMP0005,Synthetic VVIP Loyal High-Value Customer Campaign,EDM,2026-06-13,2026-06-19,VVIP Loyal High-Value Customer,percentage_discount,10.0,413,382,144,48,27,1922.63,724.98,0.376963,0.125654,0.070681,2.651977
