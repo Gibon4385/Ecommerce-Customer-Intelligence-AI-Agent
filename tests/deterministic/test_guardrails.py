@@ -149,6 +149,26 @@ def test_agent_blocks_input_before_calling_llm_and_traces_category(tmp_path: Pat
     assert all("忽略" not in str(event) for event in events)
 
 
+def test_agent_records_normalized_language_metadata_without_raw_input(tmp_path: Path) -> None:
+    gateway, identities, traces = _agent_runtime(tmp_path)
+    message = "Please check revenue for a@example.com"
+    agent = MinimalAgent(
+        FakeLLMClient([{"answer": "No authorized result was requested."}]),
+        gateway,
+        traces,
+        PROMPT,
+    )
+    response = agent.run(message, identity=identities.resolve("support_01"))
+    request = next(
+        event for event in traces.get(response.trace_id) if event["event_type"] == "request"
+    )
+    assert request["payload"]["input"] == "Please check revenue for [REDACTED_EMAIL]"
+    assert request["payload"]["detected_language"] == "en"
+    assert request["payload"]["language_support"] == "full"
+    assert len(request["payload"]["input_hash"]) == 64
+    assert "a@example.com" not in str(request)
+
+
 def test_agent_sanitizes_final_answer_and_blocks_guarantee(tmp_path: Path) -> None:
     gateway, identities, traces = _agent_runtime(tmp_path)
     identity = identities.resolve("support_01")

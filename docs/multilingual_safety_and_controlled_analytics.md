@@ -1,6 +1,6 @@
 # Multilingual Safety and Controlled Analytics
 
-狀態：下一階段前置設計，尚未實作  
+狀態：Sprint 8.5 基礎完成；已建立政策、測試 corpus、normalization 與安全介面，尚未接入正式分類服務或開放 Analytics DSL 執行
 優先級：高於 Sprint 9～15 roadmap  
 建立日期：2026-11-06
 
@@ -272,3 +272,13 @@ Masked Typed Result＋Trace
 3. Metric Registry 第一批 metrics、dimensions 與角色矩陣。
 4. 是否有真實需求需要 Level 3 SQL；若沒有，先只做 typed tools＋Analytics DSL。
 5. 多語言安全與查詢彈性的 release gate 門檻及負責人。
+
+## Sprint 8.5 已確認決策
+
+- 正式支援語言：繁體中文與英文。
+- 有限支援語言：日文、韓文與西班牙文；低安全信心時 fail closed，要求改寫或人工檢查。
+- 安全分類器先採 provider-neutral interface；確定性測試只使用 Fake classifier，不呼叫外部 LLM。
+- Controlled Analytics 先維持 Level 1 typed tools，並設計 Level 2；不實作 Level 3 SQL。
+- 第一批 Metric Registry 候選為 daily KPI、conversion funnel、category sales。
+- `configs/metric_registry.yaml` 是不可執行的候選規格；在 DSL schema、compiler 與 policy tests
+  完成前，不得註冊為 Agent tool。

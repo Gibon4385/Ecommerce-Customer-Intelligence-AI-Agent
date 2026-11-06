@@ -80,7 +80,7 @@ class MinimalAgent:
     def run(self, message: str, *, identity: Identity) -> AgentResponse:
         trace_id = self.trace_store.new_trace_id()
         try:
-            self.input_guardrail.validate(message)
+            normalized = self.input_guardrail.validate(message)
         except InputGuardrailError as exc:
             exc.trace_id = trace_id
             self.trace_store.record(
@@ -105,6 +105,11 @@ class MinimalAgent:
             channel=identity.channel,
             input=redact_text(message),
             prompt_version=self.prompt.version,
+            input_hash=normalized.original_hash,
+            detected_language=normalized.language.detected_language,
+            language_confidence=normalized.language.confidence,
+            language_support=normalized.language.support_level,
+            normalization_signals=normalized.signals,
         )
         route = self.router.route(message)
         self.trace_store.record(

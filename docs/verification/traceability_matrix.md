@@ -43,6 +43,12 @@
 | GUARD-OUT-002 | 未核准折扣、補償及成效保證 | `test_guardrails.py::test_output_guardrail_blocks_commitments` |
 | GUARD-OUT-003 | 安全否定語境不誤擋 | `test_guardrails.py::test_output_guardrail_allows_safety_negations` |
 | GUARD-INDIRECT-001 | RAG 資料不能觸發第二次工具呼叫 | `test_guardrails.py::test_indirect_injection_cannot_trigger_second_tool_call` |
+| ML-NORM-001 | NFKC、大小寫、空白及零寬／控制字元 canonical normalization | `test_multilingual_safety.py::test_normalization_handles_width_case_whitespace_and_invisible_characters` |
+| ML-LANG-001 | 繁中／英文正式支援；日／韓／西有限支援政策 | `configs/red_team_multilingual.yaml`, `test_multilingual_safety.py::test_limited_support_normal_cases_are_not_blocked` |
+| ML-SAFE-001 | 多語言、混合語言及 Unicode 高風險案例不得繞過 guardrail | `test_multilingual_safety.py::test_multilingual_red_team_corpus_has_no_guardrail_bypass` |
+| ML-SAFE-002 | 安全分類低信心 fail closed | `test_multilingual_safety.py::test_low_classifier_confidence_fails_closed` |
+| ML-TRACE-001 | trace 保存原文 hash、語言結果與 normalization signals，且不保存未遮罩原文 | `test_guardrails.py::test_agent_records_normalized_language_metadata_without_raw_input` |
+| ANALYTICS-REG-001 | 第一批 Metric Registry 只引用 schema Mart 與既有角色，且不可執行 | `test_multilingual_safety.py::test_metric_registry_is_non_executable_and_references_marts_and_roles` |
 | ACTION-001 | 所有公開 action 先建立不可執行 dry-run | `test_actions.py`, `test_action_gateway.py` |
 | ACTION-002 | 未核准、錯誤核准者、自批與錯誤執行者 | `test_actions.py::test_dry_run_is_non_executable_and_requires_independent_approval`, `test_actions.py::test_wrong_approver_and_wrong_executor_cannot_cause_side_effect` |
 | ACTION-003 | 核准期限與過期阻擋 | `test_actions.py::test_expired_approval_is_rejected_before_adapter` |

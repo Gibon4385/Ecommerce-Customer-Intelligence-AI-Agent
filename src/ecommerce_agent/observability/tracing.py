@@ -27,6 +27,9 @@ def redact_text(value: str) -> str:
 
 def redact_value(value: Any, key: str = "") -> Any:
     lowered = key.lower()
+    if lowered == "input_hash" and isinstance(value, str) and re.fullmatch(r"[a-f0-9]{64}", value):
+        # This is a request-content digest for correlation, not a customer identifier.
+        return value
     if lowered in {"email", "hashed_email", "user_id", "requested_by", "approved_by"}:
         return "[REDACTED_IDENTIFIER]"
     if isinstance(value, str):

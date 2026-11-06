@@ -1,0 +1,33 @@
+version: 1
+status: candidate_not_executable
+metrics:
+  daily_kpi:
+    source_mart: mart_ops_daily_kpi
+    date_field: date
+    grain: day
+    completed_only: true
+    dimensions: []
+    filters: [date_range]
+    roles: [PM, Marketing, Ops, Admin]
+    null_policy: preserve
+    implementation: existing_typed_tool
+  conversion_funnel:
+    source_mart: mart_ops_conversion_funnel
+    date_field: date
+    grain: [day, category]
+    completed_only: null
+    dimensions: [category]
+    filters: [date_range, category]
+    roles: [Marketing, Ops, Admin]
+    null_policy: preserve
+    implementation: existing_typed_tool
+  category_sales:
+    source_mart: mart_ops_category_sales
+    date_field: week_start
+    grain: [week, category]
+    completed_only: true
+    dimensions: [category]
+    filters: [date_range, category]
+    roles: [PM, Marketing, Ops, Admin]
+    null_policy: preserve
+    implementation: existing_typed_tool

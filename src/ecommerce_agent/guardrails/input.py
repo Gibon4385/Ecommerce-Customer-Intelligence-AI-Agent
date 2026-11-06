@@ -3,6 +3,9 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 
+from .classifier import SafetyClassifier
+from .normalization import NormalizedInput, normalize_input
+
 
 class InputGuardrailError(ValueError):
     def __init__(self, category: str, message: str):
@@ -14,6 +17,8 @@ class InputGuardrailError(ValueError):
 @dataclass(frozen=True)
 class InputGuardrail:
     max_characters: int = 4000
+    classifier: SafetyClassifier | None = None
+    minimum_classifier_confidence: float = 0.8
 
     _patterns = {
         "prompt_injection": (
@@ -41,7 +46,7 @@ class InputGuardrail:
         ),
     }
 
-    def validate(self, message: str) -> None:
+    def validate(self, message: str) -> NormalizedInput:
         if not isinstance(message, str) or not message.strip():
             raise InputGuardrailError("empty_input", "message must not be empty")
         if len(message) > self.max_characters:
@@ -49,6 +54,23 @@ class InputGuardrail:
                 "oversized_input",
                 f"message exceeds {self.max_characters} characters",
             )
+        normalized = normalize_input(message)
         for category, patterns in self._patterns.items():
-            if any(re.search(pattern, message, re.IGNORECASE | re.DOTALL) for pattern in patterns):
+            if any(
+                re.search(pattern, normalized.canonical, re.IGNORECASE | re.DOTALL)
+                for pattern in patterns
+            ):
                 raise InputGuardrailError(category, f"request blocked by {category} guardrail")
+        if self.classifier is not None:
+            classification = self.classifier.classify(normalized)
+            blocked_category = classification.blocked_category()
+            if blocked_category is not None:
+                raise InputGuardrailError(
+                    blocked_category,
+                    f"request blocked by {blocked_category} classifier",
+                )
+            if classification.confidence < self.minimum_classifier_confidence:
+                raise InputGuardrailError(
+                    "low_safety_confidence", "request requires review or reformulation"
+                )
+        return normalized
