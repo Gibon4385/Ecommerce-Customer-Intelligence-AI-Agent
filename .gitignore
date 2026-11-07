@@ -21,3 +21,5 @@ reports/verification/pytest-junit.xml
 reports/verification/release_gate.json
 src/graphify-out/
 graphify-out/
+docs/
+README_ALTERNATIVE.md
