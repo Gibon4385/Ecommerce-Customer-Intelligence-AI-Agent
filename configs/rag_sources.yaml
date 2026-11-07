@@ -4,18 +4,39 @@ documents:
     version: "1.0"
     title: Operational Mart Definitions
     allowed_roles: [PM, Marketing, Ops, Admin]
+    management_mode: system_managed
+    template_type: managed_reference
+    domain: operations
+    updated: null
   - id: task-log-definitions
     path: knowledge_base/data_dictionary/agent_task_log.md
     version: "1.0"
     title: Agent Task Log Definitions
     allowed_roles: [PM, Marketing, Ops, Admin]
+    management_mode: system_managed
+    template_type: managed_reference
+    domain: operations
+    updated: null
   - id: customer-contact-policy
     path: knowledge_base/policies/customer_contact_policy.md
     version: "1.0"
     title: Customer Contact Policy
     allowed_roles: [Support, Marketing, Admin]
+    management_mode: business_managed
+    template_type: business_policy
+    domain: marketing
+    updated: null
+    template_content:
+      scenario: EDM 與行銷通知
+      rule: 同一客戶七天內最多收到兩次行銷聯絡，建立受眾前必須排除近期已接觸客戶
+      exception: 無；敏感識別資訊不得出現在輸出
+      when_exceeded: 說明限制並建議調整客群或日期，且不得略過 dry-run 與獨立核准
   - id: admin-operations-policy
     path: knowledge_base/policies/admin_operations_policy.md
     version: "1.0"
     title: Admin Operations Policy
     allowed_roles: [Admin]
+    management_mode: locked
+    template_type: managed_reference
+    domain: operations
+    updated: null

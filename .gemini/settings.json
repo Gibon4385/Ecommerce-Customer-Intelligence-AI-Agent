@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "ecommerce-intelligence": {
+      "command": "uv",
+      "args": ["run", "ecommerce-agent-mcp"],
+      "cwd": ".",
+      "env": {
+        "ECOMMERCE_AGENT_USER": "ops_01"
+      }
+    }
+  }
+}

@@ -12,6 +12,10 @@ dependencies = [
 [project.scripts]
 ecommerce-agent = "ecommerce_agent.cli:main"
 ecommerce-agent-mcp = "ecommerce_agent.mcp_server:main"
+ecommerce-agent-dashboard = "ecommerce_agent.dashboard:main"
+ecommerce-agent-demo = "ecommerce_agent.demo_portal:main"
+ecommerce-agent-portal = "ecommerce_agent.portal:main"
+ecommerce-agent-diagnostics = "ecommerce_agent.monitoring:main"
 
 [build-system]
 requires = ["setuptools>=80"]

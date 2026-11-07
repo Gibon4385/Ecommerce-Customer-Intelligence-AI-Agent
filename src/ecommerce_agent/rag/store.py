@@ -77,7 +77,15 @@ class DuckDBRagStore:
             )
 
     def rebuild_from_manifest(self, manifest_path: Path, *, root: Path) -> dict[str, Any]:
-        config = yaml.safe_load(manifest_path.read_text(encoding="utf-8"))
+        return self.rebuild_from_manifests([manifest_path], root=root)
+
+    def rebuild_from_manifests(
+        self, manifest_paths: list[Path], *, root: Path
+    ) -> dict[str, Any]:
+        items: list[dict[str, Any]] = []
+        for manifest_path in manifest_paths:
+            config = yaml.safe_load(manifest_path.read_text(encoding="utf-8")) or {}
+            items.extend(config.get("documents", []))
         documents = [
             RagDocument(
                 document_id=item["id"],
@@ -86,8 +94,11 @@ class DuckDBRagStore:
                 title=item["title"],
                 allowed_roles=tuple(item["allowed_roles"]),
             )
-            for item in config["documents"]
+            for item in items
         ]
+        ids = [document.document_id for document in documents]
+        if len(ids) != len(set(ids)):
+            raise RagError("duplicate RAG document id across manifests")
         records: list[tuple[RagDocument, str, list[dict[str, Any]]]] = []
         for document in sorted(documents, key=lambda item: item.document_id):
             if not document.path.is_file():
