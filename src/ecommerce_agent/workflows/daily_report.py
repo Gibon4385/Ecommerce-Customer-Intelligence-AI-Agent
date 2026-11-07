@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import time
 from collections import Counter
 from dataclasses import dataclass
 from datetime import UTC, date, datetime
@@ -8,7 +9,7 @@ from decimal import Decimal
 from typing import Any
 
 from ecommerce_agent.auth.identity import Identity
-from ecommerce_agent.observability.tracing import JsonlTraceStore
+from ecommerce_agent.observability.tracing import JsonlTraceStore, redacted_content_record
 from ecommerce_agent.tools.gateway import ToolGateway
 
 
@@ -27,6 +28,30 @@ class DailyOperationsWorkflow:
 
     def run(self, *, identity: Identity) -> DailyReportResult:
         trace_id = self.traces.new_trace_id()
+        started = time.monotonic()
+        self.traces.record(
+            "interaction_started",
+            trace_id,
+            channel=identity.channel,
+            request_type="workflow",
+            workflow="daily_operations_report",
+            role=identity.role,
+            data_scope=identity.data_scope,
+        )
+        try:
+            return self._execute(identity=identity, trace_id=trace_id, started=started)
+        except Exception as exc:
+            self.traces.record(
+                "interaction_failed",
+                trace_id,
+                duration_ms=round((time.monotonic() - started) * 1000, 3),
+                error_type=type(exc).__name__,
+            )
+            raise
+
+    def _execute(
+        self, *, identity: Identity, trace_id: str, started: float
+    ) -> DailyReportResult:
         freshness = self._call("get_data_freshness", {}, identity, trace_id)
         daily = self._call("get_daily_kpi", {"limit": 29}, identity, trace_id)
         funnel = self._call(
@@ -113,6 +138,12 @@ class DailyOperationsWorkflow:
             workflow="daily_operations_report",
             report_task_id=report["task"]["task_id"],
             delayed=delayed,
+            output=redacted_content_record(markdown),
+        )
+        self.traces.record(
+            "interaction_completed",
+            trace_id,
+            duration_ms=round((time.monotonic() - started) * 1000, 3),
         )
         return DailyReportResult(
             markdown=markdown,

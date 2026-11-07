@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 from datetime import UTC, datetime
 from typing import Any
 
@@ -221,6 +222,15 @@ class ActionService:
             self._record_denied(task_id, identity, trace_id, "FrequencyLimitError")
             raise FrequencyLimitError("segment reached the two sends per seven days limit")
         payload = self.store.get_payload(task_id)["payload"]
+        self.traces.record(
+            "action_execution_started",
+            trace_id,
+            task_id=task_id,
+            task_type=task["task_type"],
+            idempotency_fingerprint=hashlib.sha256(
+                task["idempotency_key"].encode("utf-8")
+            ).hexdigest(),
+        )
         try:
             external_ref = self.adapter.execute(
                 task["task_type"], payload, idempotency_key=task["idempotency_key"]

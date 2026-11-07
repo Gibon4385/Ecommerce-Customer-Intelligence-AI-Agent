@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import time
 from dataclasses import asdict
 from pathlib import Path
@@ -8,7 +9,11 @@ from typing import Any
 import yaml
 
 from ecommerce_agent.auth.identity import Identity
-from ecommerce_agent.observability.tracing import JsonlTraceStore, redact_value
+from ecommerce_agent.observability.tracing import (
+    JsonlTraceStore,
+    redact_value,
+    redacted_content_record,
+)
 
 from .catalog import TOOL_SPECS
 from .query import QueryTools, ToolResult, json_safe
@@ -149,6 +154,14 @@ class ToolGateway:
             row_count=len(result.data) if isinstance(result.data, list) else None,
             data_version=result.data_version,
             data_as_of=result.data_as_of,
+            output=redacted_content_record(
+                json.dumps(redact_value(payload), ensure_ascii=False, default=str)
+            ),
+            citations=(
+                [row.get("citation") for row in payload.get("data", []) if row.get("citation")]
+                if tool_name == "search_knowledge" and isinstance(payload.get("data"), list)
+                else []
+            ),
         )
         return payload
 

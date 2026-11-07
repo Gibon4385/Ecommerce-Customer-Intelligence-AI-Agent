@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 import pytest
@@ -93,6 +94,8 @@ def test_gateway_enforces_role_limit_and_masks_fields(runtime) -> None:
     assert "predicted_profit_90_days" in marketing
     authorization = traces.get(support_trace)[0]
     assert authorization["payload"]["arguments"]["user_id"] == "[REDACTED_IDENTIFIER]"
+    tool_result = traces.get(support_trace)[-1]
+    assert "support_01" not in json.dumps(tool_result)
 
     with pytest.raises(ToolNotFoundError):
         gateway.call(
@@ -117,7 +120,9 @@ def test_agent_tool_flow_preserves_trusted_identity(runtime) -> None:
     events = traces.get(response.trace_id)
     authorization = next(event for event in events if event["event_type"] == "authorization")
     assert authorization["payload"]["role"] == "Ops"
-    assert events[0]["event_type"] == "request" and events[-1]["event_type"] == "response"
+    assert events[0]["event_type"] == "interaction_started"
+    assert any(event["event_type"] == "request" for event in events)
+    assert events[-1]["event_type"] == "interaction_completed"
     assert events[0]["payload"]["prompt_version"] == "test"
 
 

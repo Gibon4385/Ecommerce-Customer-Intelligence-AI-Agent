@@ -8,15 +8,16 @@ from ecommerce_agent import mcp_server
 
 
 @pytest.mark.asyncio
-async def test_mcp_lists_typed_business_tools() -> None:
+async def test_mcp_lists_only_role_authorized_business_tools(monkeypatch) -> None:
+    monkeypatch.setenv("ECOMMERCE_AGENT_USER", "ops_01")
     tools = await mcp_server.list_tools()
     by_name = {tool.name: tool for tool in tools}
     assert "get_daily_kpi" in by_name
     assert "search_knowledge" in by_name
-    assert "send_edm" in by_name
+    assert "send_edm" not in by_name
     assert "create_product_issue" in by_name
     assert "generate_report" in by_name
-    assert by_name["get_customer_profile"].inputSchema["required"] == ["user_id"]
+    assert "get_customer_profile" not in by_name
 
 
 @pytest.mark.asyncio

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import time
 from dataclasses import dataclass
 from typing import Any
 
@@ -9,12 +10,16 @@ from ecommerce_agent.agent.prompts import PromptBundle
 from ecommerce_agent.auth.identity import Identity
 from ecommerce_agent.cache import DuckDBResponseCache
 from ecommerce_agent.guardrails import (
+    DeterministicSafetyClassifier,
     InputGuardrail,
     InputGuardrailError,
     OutputGuardrail,
     OutputGuardrailError,
 )
-from ecommerce_agent.observability.tracing import JsonlTraceStore, redact_text
+from ecommerce_agent.observability.tracing import (
+    JsonlTraceStore,
+    redacted_content_record,
+)
 from ecommerce_agent.routing import DeterministicRouter, RouteDecision
 from ecommerce_agent.tools.catalog import TOOL_SPECS
 from ecommerce_agent.tools.gateway import ToolGateway
@@ -71,7 +76,9 @@ class MinimalAgent:
         self.gateway = gateway
         self.trace_store = trace_store
         self.prompt = prompt
-        self.input_guardrail = input_guardrail or InputGuardrail()
+        self.input_guardrail = input_guardrail or InputGuardrail(
+            classifier=DeterministicSafetyClassifier()
+        )
         self.output_guardrail = output_guardrail or OutputGuardrail()
         self.router = router or DeterministicRouter()
         self.response_cache = response_cache
@@ -79,6 +86,19 @@ class MinimalAgent:
 
     def run(self, message: str, *, identity: Identity) -> AgentResponse:
         trace_id = self.trace_store.new_trace_id()
+        started = time.monotonic()
+        self.trace_store.record(
+            "interaction_started",
+            trace_id,
+            channel=identity.channel,
+            request_type="natural_language",
+            role=identity.role,
+            data_scope=identity.data_scope,
+            prompt_version=self.prompt.version,
+        )
+        self.trace_store.record(
+            "input_received", trace_id, input=redacted_content_record(message)
+        )
         try:
             normalized = self.input_guardrail.validate(message)
         except InputGuardrailError as exc:
@@ -93,8 +113,14 @@ class MinimalAgent:
             self.trace_store.record(
                 "response",
                 trace_id,
-                status="failed",
+                status="blocked",
                 error_type=type(exc).__name__,
+            )
+            self.trace_store.record(
+                "interaction_blocked",
+                trace_id,
+                category=exc.category,
+                duration_ms=round((time.monotonic() - started) * 1000, 3),
             )
             raise
         self.trace_store.record(
@@ -103,7 +129,7 @@ class MinimalAgent:
             user_id=identity.user_id,
             role=identity.role,
             channel=identity.channel,
-            input=redact_text(message),
+            input=redacted_content_record(message),
             prompt_version=self.prompt.version,
             input_hash=normalized.original_hash,
             detected_language=normalized.language.detected_language,
@@ -132,12 +158,34 @@ class MinimalAgent:
                 answer = self.output_guardrail.sanitize(cached[0], identity=identity)
                 self.trace_store.record("cache_hit", trace_id, cache_type=cached[1])
                 self.trace_store.record(
-                    "response", trace_id, answer_length=len(answer), status="success"
+                    "response",
+                    trace_id,
+                    output=redacted_content_record(answer),
+                    status="success",
+                )
+                self.trace_store.record(
+                    "interaction_completed",
+                    trace_id,
+                    cache_type=cached[1],
+                    data_version=data_version,
+                    duration_ms=round((time.monotonic() - started) * 1000, 3),
                 )
                 return AgentResponse(answer=answer, trace_id=trace_id)
+            self.trace_store.record("cache_lookup", trace_id, outcome="miss")
+        elif self.response_cache is not None:
+            self.trace_store.record("cache_lookup", trace_id, outcome="bypass")
         try:
             routed_llm = self.llm_clients[route.model_tier]
+            llm_started = time.monotonic()
             decision = routed_llm.complete(self._planning_prompt(message, identity, route))
+            self.trace_store.record(
+                "llm_call",
+                trace_id,
+                stage="planning",
+                client=type(routed_llm).__name__,
+                model_tier=route.model_tier,
+                duration_ms=round((time.monotonic() - llm_started) * 1000, 3),
+            )
             if "answer" in decision:
                 answer = str(decision["answer"])
             else:
@@ -170,7 +218,16 @@ class MinimalAgent:
                             ),
                         }
                     )
+                llm_started = time.monotonic()
                 final = routed_llm.complete(self._answer_prompt(message, observations))
+                self.trace_store.record(
+                    "llm_call",
+                    trace_id,
+                    stage="answer",
+                    client=type(routed_llm).__name__,
+                    model_tier=route.model_tier,
+                    duration_ms=round((time.monotonic() - llm_started) * 1000, 3),
+                )
                 if not isinstance(final.get("answer"), str):
                     raise ValueError("LLM final response must contain string field 'answer'")
                 answer = final["answer"]
@@ -187,7 +244,10 @@ class MinimalAgent:
                 )
                 raise
             self.trace_store.record(
-                "response", trace_id, answer_length=len(answer), status="success"
+                "response",
+                trace_id,
+                output=redacted_content_record(answer),
+                status="success",
             )
             if self.response_cache is not None and route.cacheable:
                 self.response_cache.put(
@@ -197,13 +257,26 @@ class MinimalAgent:
                     prompt_version=self.prompt.version,
                     data_version=data_version,
                 )
+            self.trace_store.record(
+                "interaction_completed",
+                trace_id,
+                data_version=data_version,
+                duration_ms=round((time.monotonic() - started) * 1000, 3),
+            )
             return AgentResponse(answer=answer, trace_id=trace_id)
         except Exception as exc:
+            blocked = isinstance(exc, OutputGuardrailError)
             self.trace_store.record(
                 "response",
                 trace_id,
-                status="failed",
+                status="blocked" if blocked else "failed",
                 error_type=type(exc).__name__,
+            )
+            self.trace_store.record(
+                "interaction_blocked" if blocked else "interaction_failed",
+                trace_id,
+                error_type=type(exc).__name__,
+                duration_ms=round((time.monotonic() - started) * 1000, 3),
             )
             raise
 

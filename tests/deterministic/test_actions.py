@@ -89,6 +89,30 @@ def test_dry_run_is_non_executable_and_requires_independent_approval(action_runt
     assert store.get_payload(task["task_id"])["preview"] == prepared["preview"]
 
 
+def test_action_fails_closed_when_write_ahead_audit_cannot_persist(action_runtime) -> None:
+    service, _, adapter, _, identities = action_runtime
+    requester = identities.resolve("marketing_01")
+    prepared = _prepare_edm(
+        service, requester, draft_key="audit-draft", send_key="audit-send"
+    )
+    task = prepared["task"]
+    service.approve_task(
+        task["task_id"],
+        identity=identities.resolve("marketing_approver"),
+        trace_id="audit-approve",
+    )
+
+    class FailingAuditStore:
+        def record(self, event_type, trace_id, **payload):
+            if event_type == "action_execution_started":
+                raise OSError("audit unavailable")
+
+    service.traces = FailingAuditStore()
+    with pytest.raises(OSError, match="audit unavailable"):
+        service.execute_task(task["task_id"], identity=requester, trace_id="audit-execute")
+    assert adapter.effect_count("audit-send") == 0
+
+
 def test_wrong_approver_and_wrong_executor_cannot_cause_side_effect(action_runtime) -> None:
     service, _, adapter, _, identities = action_runtime
     requester = identities.resolve("marketing_01")

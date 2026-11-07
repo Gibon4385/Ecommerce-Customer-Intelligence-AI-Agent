@@ -59,7 +59,10 @@ def test_daily_report_is_deterministic_role_authorized_and_audited(
     assert result.delayed is True and "資料延遲" in result.markdown
     task = task_store.get(result.report_task_id, identity=identity)
     assert task["task_type"] == "report" and task["status"] == "pending_approval"
-    assert traces.get(result.trace_id)[-1]["event_type"] == "workflow_complete"
+    events = traces.get(result.trace_id)
+    assert events[0]["event_type"] == "interaction_started"
+    assert events[-2]["event_type"] == "workflow_complete"
+    assert events[-1]["event_type"] == "interaction_completed"
 
 
 def test_daily_report_is_idempotent_for_same_snapshot(workflow_runtime) -> None:
@@ -73,9 +76,12 @@ def test_daily_report_is_idempotent_for_same_snapshot(workflow_runtime) -> None:
 
 
 def test_support_cannot_run_daily_report(workflow_runtime) -> None:
-    workflow, _, identities, _, _ = workflow_runtime
+    workflow, _, identities, _, traces = workflow_runtime
     with pytest.raises(ToolAuthorizationError):
         workflow.run(identity=identities.resolve("support_01"))
+    events = traces.recent(20)
+    assert events[-1]["event_type"] == "interaction_failed"
+    assert events[-1]["payload"]["error_type"] == "ToolAuthorizationError"
 
 
 def test_delay_detection_handles_failed_and_fresh_data() -> None:
